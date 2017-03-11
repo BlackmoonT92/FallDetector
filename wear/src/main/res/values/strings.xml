@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Fall Detector</string>
+    <string name="Accelerometer_X"> Accelerometer X axis</string>
+    <string name="Accelerometer_Y"> Accelerometer Y axis</string>
+    <string name="Accelerometer_Z"> Accelerometer Z axis</string>
+    <string name="Gyroscope_X"> Gyroscope X axis</string>
+    <string name="Gyroscope_Y"> Gyroscope Y axis</string>
+    <string name="Gyroscope_Z"> Gyroscope Z axis</string>
+</resources>

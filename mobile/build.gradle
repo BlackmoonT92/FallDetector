@@ -1,0 +1,51 @@
+apply plugin: 'com.android.application'
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
+    defaultConfig {
+        applicationId "edu.asu.msama1.falldetector"
+        minSdkVersion 22
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets { main { resources.srcDirs = ['src/main/resources', 'src/main/resources/'] } }
+
+    dependencies {
+        compile fileTree(include: ['*.jar'], dir: 'libs')
+        androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+            exclude group: 'com.android.support', module: 'support-annotations'
+        })
+        wearApp project(':wear')
+        compile 'com.google.android.gms:play-services:9.6.1'
+        compile 'com.android.support:support-v4:23.0.1'
+        compile 'com.android.support:appcompat-v7:24.2.1'
+        compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
+        compile 'com.google.android.gms:play-services-location:7.5.0'
+        testCompile 'junit:junit:4.12'
+        compile 'javax.mail:mail:1.5.0-b01'
+        compile files('libs/activation.jar')
+        compile files('libs/additionnal.jar')
+        compile files('libs/mail.jar')
+        //compile files('libs/GraphView-4.2.1.jar')
+        compile 'com.jjoe64:graphview:4.2.1'
+    }
+
+    packagingOptions {
+        pickFirst 'META-INF/LICENSE.txt'
+        exclude 'META-INF/mailcap'
+        exclude 'META-INF/javamail.default.address.map'
+        exclude 'META-INF/javamail.charset.map'
+        exclude 'META-INF/javamail.default.providers'
+        exclude 'META-INF/gfprobe-provider.xml'
+        exclude 'META-INF/mimetypes.default'
+        exclude 'META-INF/mailcap.default'
+    }
+}

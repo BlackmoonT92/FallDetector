@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.asu.msama1.falldetector.Wearable"
+    tools:deviceIds="wear_round">
+
+    <TextView
+        android:id="@+id/gyroY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Gyroscope_Y"
+        android:layout_alignStart="@+id/gyroZ"
+        android:layout_above="@+id/gyroZ" />
+
+    <TextView
+        android:id="@+id/gyroX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Gyroscope_X"
+        android:layout_above="@+id/gyroY"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/gyroZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Gyroscope_Z"
+        android:layout_marginBottom="32dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignEnd="@+id/gyroX" />
+
+    <TextView
+        android:id="@+id/accelX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Accelerometer_X"
+        android:layout_weight="1"
+        android:layout_above="@+id/accelY"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/accelZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Accelerometer_Z"
+        android:layout_centerVertical="true"
+        android:layout_alignStart="@+id/accelY" />
+
+    <TextView
+        android:id="@+id/accelY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Accelerometer_Y"
+        android:layout_above="@+id/accelZ"
+        android:layout_alignStart="@+id/accelX" />
+</RelativeLayout>
