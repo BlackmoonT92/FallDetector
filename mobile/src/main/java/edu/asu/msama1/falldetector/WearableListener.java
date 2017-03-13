@@ -28,7 +28,6 @@ public class WearableListener extends WearableListenerService {
         String[] message = event.split(" ");
 
         if(message[0].contains("Accelero")){
-            //Log.i(TAG, "Inside wearable listener");
             double aX = Double.parseDouble(message[1]);
             double aY = Double.parseDouble(message[2]);
             double aZ = Double.parseDouble(message[3]);

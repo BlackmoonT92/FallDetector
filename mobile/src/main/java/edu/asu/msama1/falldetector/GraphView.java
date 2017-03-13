@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -20,7 +21,6 @@ public class GraphView extends View {
     public static boolean LINE = true;
 
     private Paint paint;
-    //private float[] values;
     private float[] normA, normG;
     private String[] horlabels;
     private String[] verlabels;
@@ -65,19 +65,12 @@ public class GraphView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        Log.i(TAG, "Inside Draw");
+
         float border = 35;
         float horstart = border * 2;
         float height = getHeight();
         float width = getWidth() - 1;
-        //Accel
-        float maxA = getMaxA();
-        float minA = getMinA();
-        float diffA = maxA - minA;
-        //Gyro
-        float maxG = getMaxG();
-        float minG = getMinG();
-        float diffG = maxG - minG;
-
         float graphheight = height - (2 * border);
         float graphwidth = width - (2 * border);
 
@@ -109,25 +102,20 @@ public class GraphView extends View {
         paint.setTextAlign(Align.CENTER);
         canvas.drawText(title, (graphwidth / 2) + horstart, border - 4, paint);
 
-        //if (maxA != minA) {
-            paint.setColor(Color.LTGRAY);
-            float datalength = normA.length;
-            float colwidth = (width - (2 * border)) / datalength;
-            float halfcol = colwidth / 2;
-            float lasth = 0;
-            //plotValue(canvas, border, horstart, minA, diffA, graphheight, colwidth, halfcol, lasth, normA, Color.GREEN);
-            plotValue(canvas, border, horstart, MIN_A, MAX_A, graphheight, colwidth, halfcol, lasth, normA, Color.GREEN);
-        //}
+        paint.setColor(Color.LTGRAY);
+        float datalength = normA.length;
+        float colwidth = (width - (2 * border)) / datalength;
+        float halfcol = colwidth / 2;
+        float lasth = 0;
+        plotValue(canvas, border, horstart, MIN_A, MAX_A, graphheight, colwidth, halfcol, lasth, normA, Color.GREEN);
 
-        //if (maxG != minG) {
-            paint.setColor(Color.LTGRAY);
-            datalength = normG.length;
-            colwidth = (width - (2 * border)) / datalength;
-            halfcol = colwidth / 2;
-            lasth = 0;
-            //plotValue(canvas, border, horstart, minG, diffG, graphheight, colwidth, halfcol, lasth, normG, Color.RED);
-            plotValue(canvas, border, horstart, MIN_G, MAX_G, graphheight, colwidth, halfcol, lasth, normG, Color.RED);
-        //}
+        paint.setColor(Color.LTGRAY);
+        datalength = normG.length;
+        colwidth = (width - (2 * border)) / datalength;
+        halfcol = colwidth / 2;
+        lasth = 0;
+        plotValue(canvas, border, horstart, MIN_G, MAX_G, graphheight, colwidth, halfcol, lasth, normG, Color.RED);
+
     }
 
     private void plotValue(Canvas canvas, float border, float horstart, float min, float diff, float graphheight, float colwidth, float halfcol, float lasth, float[] values, int color) {
@@ -142,44 +130,6 @@ public class GraphView extends View {
             canvas.drawLine(((i - 1) * colwidth) + (horstart + 1) + halfcol, (border - lasth) + graphheight, (i * colwidth) + (horstart + 1) + halfcol, (border - h) + graphheight, paint);
             lasth = h;
         }
-    }
-
-    private float getMaxA() {
-
-        float largest = Integer.MIN_VALUE;
-        for (int i = 0; i < normA.length; i++)
-            if (normA[i] > largest)
-                largest = normA[i];
-
-        return largest;
-    }
-
-    private float getMaxG() {
-
-        float largest = Integer.MIN_VALUE;
-        for (int i = 0; i < normG.length; i++)
-            if (normG[i] > largest)
-                largest = normG[i];
-
-        return largest;
-    }
-
-    private float getMinA() {
-        float smallest = Integer.MAX_VALUE;
-        for (int i = 0; i < normA.length; i++)
-            if (normA[i] < smallest)
-                smallest = normA[i];
-
-        return smallest;
-    }
-
-    private float getMinG() {
-        float smallest = Integer.MAX_VALUE;
-        for (int i = 0; i < normG.length; i++)
-            if (normG[i] < smallest)
-                smallest = normG[i];
-
-        return smallest;
     }
 
 }
