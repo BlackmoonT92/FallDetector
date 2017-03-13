@@ -5,9 +5,10 @@ android {
     defaultConfig {
         applicationId "edu.asu.msama1.falldetector"
         minSdkVersion 22
-        targetSdkVersion 24
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
+        multiDexEnabled = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -31,9 +32,9 @@ android {
         compile 'com.google.android.gms:play-services-location:7.5.0'
         testCompile 'junit:junit:4.12'
         compile 'javax.mail:mail:1.5.0-b01'
-        compile files('libs/activation.jar')
-        compile files('libs/additionnal.jar')
-        compile files('libs/mail.jar')
+        //compile files('libs/activation.jar')
+        //compile files('libs/additionnal.jar')
+        //compile files('libs/mail.jar')
         //compile files('libs/GraphView-4.2.1.jar')
         compile 'com.jjoe64:graphview:4.2.1'
     }

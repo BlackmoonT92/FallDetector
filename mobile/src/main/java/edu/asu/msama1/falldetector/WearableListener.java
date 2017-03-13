@@ -6,6 +6,8 @@ import android.util.Log;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 
+import java.io.IOException;
+
 /**
  * Created by Mitikaa on 11/14/16.
  */
@@ -16,6 +18,7 @@ public class WearableListener extends WearableListenerService {
     public String nodeId;
     double g = 9.81;
     double normA = 0.0, normG = 0.0;
+    long lastInsertedTimeStamp = System.currentTimeMillis();
 
     @Override
     public void onMessageReceived(MessageEvent messageEvent){
@@ -32,6 +35,7 @@ public class WearableListener extends WearableListenerService {
             normA = aX * aX + aY * aY + aZ * aZ;
             normA = Math.sqrt(normA);
         }
+
         if(message[0].contains("Gyro")){
             double gX = Double.parseDouble(message[1]);
             double gY = Double.parseDouble(message[2]);
@@ -46,6 +50,19 @@ public class WearableListener extends WearableListenerService {
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(i);
+        }
+
+        try {
+            long currentTimeStamp = System.currentTimeMillis();
+            if((currentTimeStamp - lastInsertedTimeStamp) > 1000) {
+                DBHelper dbHelper = DBHelper.getInstance(WearableListener.this);
+                dbHelper.onCreateTable();
+                dbHelper.insertAccelNorm((float) normA);
+                dbHelper.insertGyroNorm((float) normG);
+                lastInsertedTimeStamp = currentTimeStamp;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

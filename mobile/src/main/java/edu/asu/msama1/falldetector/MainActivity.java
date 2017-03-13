@@ -1,7 +1,9 @@
 package edu.asu.msama1.falldetector;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -47,9 +49,17 @@ public class MainActivity extends Activity {
                     Toast.makeText(MainActivity.this, "Please enter a valid messgae to be sent", Toast.LENGTH_LONG).show();
                     message = "Hello, an unintended fall has been detected at the following location. Please get help!";
                 }
+
+                startGraphActivity();
             }
         });
 
+    }
+
+    private void startGraphActivity(){
+        Log.i(TAG, "Starting Graph Activity");
+        Intent i = new Intent(this, GraphActivity.class);
+        startActivity(i);
     }
 
     public String getPhoneNumber1() {
