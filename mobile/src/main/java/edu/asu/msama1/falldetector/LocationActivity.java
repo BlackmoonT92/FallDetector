@@ -22,9 +22,10 @@ public class LocationActivity  implements LocationListener, ActivityCompat.OnReq
 
     private final Context mContext;
     protected LocationManager locationManager;
-    Location location;
+    protected Location location;
     double latitude = 0;
     double longitude = 0;
+
 
     private static final long MINIMUM_DISTANCE_FOR_UPDATES = 10;
     private static final long MINIMUM_TIME_BETWEEN_UPDATES = 1000 * 60; //every 60 seconds
@@ -92,7 +93,7 @@ public class LocationActivity  implements LocationListener, ActivityCompat.OnReq
                     }
 
                     if (location != null) {
-                        Log.i(TAG, " fetching new coordinates ");
+                        Log.i(TAG, "Fetching new coordinates ");
 
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
@@ -209,4 +210,5 @@ public class LocationActivity  implements LocationListener, ActivityCompat.OnReq
     public void setLocation(Location location) {
         this.location = location;
     }
+
 }

@@ -23,7 +23,6 @@ public class DBHelper extends SQLiteOpenHelper {
     private static String TAG = "DBHelper";
 
     private static final String DB_NAME = Environment.getExternalStorageDirectory() + File.separator + "data.db";
-    //private static final String DB_NAME = "MyDB.db";
     private static DBHelper dbHelper;
     private final String TABLE_ACCEL = "Accel";
     private final String TABLE_GYRO = "Gyro";
@@ -98,8 +97,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public GraphValues getGraphValues() {
         Cursor cursorA = null, cursorG = null;
-        String selectQuery1 = "SELECT  * FROM " + TABLE_ACCEL + " ORDER BY TimeStamp DESC";
-        String selectQuery2 = "SELECT  * FROM " + TABLE_GYRO + " ORDER BY TimeStamp DESC";
+        String selectQuery1 = "SELECT  * FROM " + TABLE_ACCEL + " ORDER BY TimeStamp DESC LIMIT 10";
+        String selectQuery2 = "SELECT  * FROM " + TABLE_GYRO + " ORDER BY TimeStamp DESC LIMIT 10";
         try {
             cursorA = db.rawQuery(selectQuery1, null);
             cursorG = db.rawQuery(selectQuery2, null);

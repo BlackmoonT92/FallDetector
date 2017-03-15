@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Fall Detector</string>
+    <string name="service_not_available">Service Not Available</string>
+    <string name="invalid_lat_long_used">Invalid Latitutde and Longitude Used</string>
+    <string name="no_address_found">No Valid Address Found</string>
+    <string name="address_found">Address Found</string>
 </resources>

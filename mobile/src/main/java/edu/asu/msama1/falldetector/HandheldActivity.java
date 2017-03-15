@@ -2,10 +2,13 @@ package edu.asu.msama1.falldetector;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -27,6 +30,9 @@ import com.google.android.gms.common.api.Status;
 
 import java.util.ArrayList;
 
+import static edu.asu.msama1.falldetector.Constants.RESULT_DATA_KEY;
+import static edu.asu.msama1.falldetector.Constants.SUCCESS_RESULT;
+
 /**
  * Created by Mitikaa on 11/14/16.
  */
@@ -40,6 +46,9 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
     protected LocationManager locationManager;
     private SMSActivity smsActivity;
     private MainActivity mainActivity;
+    protected Location location;
+    private AddressResultReceiver mResultReceiver;
+    String geoLocation;
 
     //double g = 9.81;
     double latitude;
@@ -47,7 +56,7 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
     String phoneNumber;
     String message;
 
-    TextView latitudeTextView, longitudeTextView;
+    TextView latitudeTextView, longitudeTextView, addressTextView;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -62,14 +71,18 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
         Intent i = getIntent();
         Log.i(TAG, "Activity started");
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).addApi(Awareness.API).build();
+        mResultReceiver = new AddressResultReceiver(new Handler());
 
         latitudeTextView = (TextView) findViewById(R.id.latitude);
         longitudeTextView = (TextView) findViewById(R.id.longitude);
+        addressTextView = (TextView) findViewById(R.id.address);
 
-        getLocation();
+        location = getLocation();
+
+        startIntentService();
 
         //send SMS with location
-        prepareAndSendMessage();
+        //prepareAndSendMessage();
 
         final Button button = (Button) findViewById(R.id.stopAlert);
         final MediaPlayer mediaPlayer = MediaPlayer.create(HandheldActivity.this, R.raw.emergency_alert);
@@ -87,39 +100,45 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
     public void displayLocationCoordinates(){
         latitudeTextView.setText(String.valueOf(latitude));
         longitudeTextView.setText(String.valueOf(longitude));
+        addressTextView.setText(geoLocation);
     }
 
-    public void getLocation(){
+    public Location getLocation(){
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationActivity = new LocationActivity(HandheldActivity.this);
         latitude = locationActivity.getLatitude();
         longitude = locationActivity.getLongitude();
+        location = locationActivity.getLocation();
         Log.d(TAG, "LocationReadings: " + latitude + ", " + longitude);
-        displayLocationCoordinates();
-        Toast.makeText(this, "LocationReadings: " + latitude + ", " + longitude, Toast.LENGTH_SHORT).show();
+        //displayLocationCoordinates();
+        //Toast.makeText(this, "LocationReadings: " + latitude + ", " + longitude, Toast.LENGTH_SHORT).show();
+        return location;
     }
 
     public void prepareAndSendMessage(){
         mainActivity = new MainActivity();
         message = mainActivity.getMessage();
+        message = message + " Address: "+ geoLocation;
+
+        Log.i(TAG, "Message: " + this.message);
 
         //send message to first contact
         phoneNumber = mainActivity.getPhoneNumber1();
         smsActivity = new SMSActivity(HandheldActivity.this, phoneNumber, latitude, longitude, message);
         Log.i(TAG, "SMS prepared");
-        smsActivity.sendSMSMessge();
+        smsActivity.sendSMSMessge(phoneNumber);
 
         //send message to second contact
         phoneNumber = mainActivity.getPhoneNumber2();
         smsActivity = new SMSActivity(HandheldActivity.this, phoneNumber, latitude, longitude, message);
         Log.i(TAG, "SMS prepared");
-        smsActivity.sendSMSMessge();
+        smsActivity.sendSMSMessge(phoneNumber);
 
         //send message to third contact
         phoneNumber = mainActivity.getPhoneNumber3();
         smsActivity = new SMSActivity(HandheldActivity.this, phoneNumber, latitude, longitude, message);
         Log.i(TAG, "SMS prepared");
-        smsActivity.sendSMSMessge();
+        smsActivity.sendSMSMessge(phoneNumber);
     }
 
     public void playAlertTone(MediaPlayer mediaPlayer){
@@ -135,6 +154,7 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         Log.d("OnDestroy: ", readings.toString());
         locationActivity.stopUsingGPS();
     }
@@ -195,4 +215,52 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
 
     }
 
+    protected void startIntentService() {
+        Log.i(TAG, "Starting intent service for geolocation");
+        Intent intent = new Intent(this, FetchAddressIntentService.class);
+        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, location);
+        startService(intent);
+    }
+
+    public String getGeoLocation() {
+        return geoLocation;
+    }
+
+    public void setGeoLocation(String geoLocation) {
+        this.geoLocation = geoLocation;
+        Log.i(TAG, "Address is: " + this.geoLocation);
+    }
+
+    class AddressResultReceiver extends ResultReceiver {
+        public String TAG = "AddressResultReceiver";
+
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+            Log.i(TAG, "After Receiving Result");
+            // Display the address string
+            // or an error message sent from the intent service.
+            String mAddressOutput = resultData.getString(RESULT_DATA_KEY);
+            displayAddressOutput(mAddressOutput);
+
+            // Show a toast message if an address was found.
+            if (resultCode == SUCCESS_RESULT) {
+                Log.i(TAG, "Success Result");
+                Toast.makeText(HandheldActivity.this, R.string.address_found, Toast.LENGTH_LONG).show();
+            }
+
+        }
+
+        private void displayAddressOutput(String mAddressOutput) {
+            Log.i(TAG, "Inside displayAddressOutput");
+            setGeoLocation(mAddressOutput);
+            prepareAndSendMessage();
+            displayLocationCoordinates();
+        }
+    }
 }

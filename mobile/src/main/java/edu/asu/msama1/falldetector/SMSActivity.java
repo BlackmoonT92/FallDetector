@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.SmsManager;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -26,21 +27,25 @@ public class SMSActivity implements ActivityCompat.OnRequestPermissionsResultCal
 
     public SMSActivity(Context mContext, String phoneNumber, double latitude, double longitude, String message){
         this.mContext = mContext;
-        this.phoneNumber = phoneNumber;
+        if(phoneNumber==null){
+            this.phoneNumber = "6023734290";
+        }
         this.latitude = latitude;
         this.longitude = longitude;
-        this.message = message + "Location of Incident:" + latitude +", " +longitude;
+        this.message = message;
     }
 
-    public void sendSMSMessge(){
+    public void sendSMSMessge(String phoneNumber){
         if(ActivityCompat.checkSelfPermission((Activity)mContext, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions((Activity)mContext,
                     new String[]{Manifest.permission.SEND_SMS},
                     MY_PERMISSIONS_REQUEST_SEND_SMS);
         }
         try{
+            Log.i(TAG, "Text message to be sent: " + message);
+            Log.i(TAG, "Phone #: " + phoneNumber);
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(this.phoneNumber, null, this.message, null, null);
+            smsManager.sendTextMessage(phoneNumber, null, this.message, null, null);
             Toast.makeText(mContext, "SMS Sent", Toast.LENGTH_LONG).show();
 
         } catch (Exception e){
@@ -60,7 +65,7 @@ public class SMSActivity implements ActivityCompat.OnRequestPermissionsResultCal
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    sendSMSMessge();
+                    sendSMSMessge(phoneNumber);
 
                 } else {
 
