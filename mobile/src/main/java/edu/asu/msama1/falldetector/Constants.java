@@ -3,7 +3,9 @@ package edu.asu.msama1.falldetector;
 /**
  * Created by Mitikaa on 3/12/17.
  *
- * Reference: Followed tutorial on https://developer.android.com/training/location/display-address.html
+ * This file contains constants used in some parts of the application (mainly for fetching street addresses from latitutde and longitude)
+ * References:
+ * https://developer.android.com/training/location/display-address.html
  */
 public final class Constants {
     public static final int SUCCESS_RESULT = 0;

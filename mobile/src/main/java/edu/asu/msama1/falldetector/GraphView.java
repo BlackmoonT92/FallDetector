@@ -12,6 +12,10 @@ import android.view.View;
  * GraphView creates a scaled line or bar graph with x and y axis labels.
  * @author Arno den Hond
  *
+ * This class has been modified to fit this project's requirement.
+ *
+ * Reference :
+ * https://github.com/vanevery/mooddroid/blob/master/src/com/mobvcasting/mooddroid/GraphView.java
  */
 public class GraphView extends View {
 

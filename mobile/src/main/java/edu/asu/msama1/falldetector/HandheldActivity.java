@@ -28,34 +28,83 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
-import java.util.ArrayList;
-
 import static edu.asu.msama1.falldetector.Constants.RESULT_DATA_KEY;
 import static edu.asu.msama1.falldetector.Constants.SUCCESS_RESULT;
 
 /**
  * Created by Mitikaa on 11/14/16.
+ *
+ * This class handles sending text messages, fetching latitude and longitude, getting street address and raising an alarm in case a fall is detected
+ *
+ * References:
+ * https://developer.android.com/reference/android/os/ResultReceiver.html
+ * https://developer.android.com/training/location/retrieve-current.html
+ * https://developer.android.com/reference/android/media/MediaPlayer.html
+ * https://developer.android.com/reference/android/app/IntentService.html
+ * https://developer.android.com/training/location/display-address.html
  */
-
 public class HandheldActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status>, ActivityCompat.OnRequestPermissionsResultCallback {
 
     public static String TAG = "HandheldActivity";
 
-    public static ArrayList<ArrayList<String>> readings = new ArrayList<ArrayList<String>>();
+    /**
+     * Object to fetch current location coordinates
+     */
     private LocationActivity locationActivity;
+
+    /**
+     * LocationManager provides access to the system location services
+     */
     protected LocationManager locationManager;
+
+    /**
+     * Object to prepare and send text messages
+     */
     private SMSActivity smsActivity;
+
+    /**
+     * Object to fetch contact numbers that the text message has to be sent to
+     */
     private MainActivity mainActivity;
+
+    /**
+     * Location object to store current location coordinates
+     */
     protected Location location;
+
+    /**
+     * Object of nested class used to receie result from FetchAddressIntentService
+     */
     private AddressResultReceiver mResultReceiver;
-    String geoLocation;
 
-    //double g = 9.81;
-    double latitude;
-    double longitude;
-    String phoneNumber;
-    String message;
+    /**
+     * To store result after reverse geocoding (i.e. stores street address of the incident)
+     */
+    private String geoLocation;
 
+    /**
+     * Stores last updated latitude coordinate
+     */
+    private double latitude;
+
+    /**
+     * Stores last updated longitude coordinate
+     */
+    private double longitude;
+
+    /**
+     * Used to send messages
+     */
+    private String phoneNumber;
+
+    /**
+     * Message to be sent in case of incident
+     */
+    private String message;
+
+    /**
+     * TextViews to display incident coordinates and street address
+     */
     TextView latitudeTextView, longitudeTextView, addressTextView;
 
     /**
@@ -68,22 +117,29 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_handheld);
+
+        //start activity request from WearableListerner class
+        //this activity will start ONLY if a fall is detected
         Intent i = getIntent();
         Log.i(TAG, "Activity started");
+
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).addApi(Awareness.API).build();
+
+        //initialize AddressResultReciever class with new Handler to handle results from FetchAddressIntentService
         mResultReceiver = new AddressResultReceiver(new Handler());
 
+        //initialize TextViews
         latitudeTextView = (TextView) findViewById(R.id.latitude);
         longitudeTextView = (TextView) findViewById(R.id.longitude);
         addressTextView = (TextView) findViewById(R.id.address);
 
+        //fetch current or last available location
         location = getLocation();
 
+        //method to start intent service
         startIntentService();
 
-        //send SMS with location
-        //prepareAndSendMessage();
-
+        //button to stop alarm after fall is detected
         final Button button = (Button) findViewById(R.id.stopAlert);
         final MediaPlayer mediaPlayer = MediaPlayer.create(HandheldActivity.this, R.raw.emergency_alert);
         button.setOnClickListener(new View.OnClickListener() {
@@ -97,12 +153,19 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
         playAlertTone(mediaPlayer);
     }
 
+    /**
+     * Method will update TextView with fetched latitude and longitude coordinates and the street address
+     */
     public void displayLocationCoordinates(){
         latitudeTextView.setText(String.valueOf(latitude));
         longitudeTextView.setText(String.valueOf(longitude));
         addressTextView.setText(geoLocation);
     }
 
+    /**
+     * This method uses LocationActivity to get the current location of the handheld device with the help of GPS
+     * @return location
+     */
     public Location getLocation(){
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationActivity = new LocationActivity(HandheldActivity.this);
@@ -110,11 +173,12 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
         longitude = locationActivity.getLongitude();
         location = locationActivity.getLocation();
         Log.d(TAG, "LocationReadings: " + latitude + ", " + longitude);
-        //displayLocationCoordinates();
-        //Toast.makeText(this, "LocationReadings: " + latitude + ", " + longitude, Toast.LENGTH_SHORT).show();
         return location;
     }
 
+    /**
+     * Prepare text message to be sent in case of an incident
+     */
     public void prepareAndSendMessage(){
         mainActivity = new MainActivity();
         message = mainActivity.getMessage();
@@ -141,12 +205,22 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
         smsActivity.sendSMSMessge(phoneNumber);
     }
 
+    /**
+     * Method to play an alert tone in case an incident has occurred
+     * @param mediaPlayer
+     */
     public void playAlertTone(MediaPlayer mediaPlayer){
-        mediaPlayer.setVolume(1.0f, 1.0f); //set full volume
-        mediaPlayer.setLooping(true); //will play the alert tone continuously
+        //set full volume
+        mediaPlayer.setVolume(1.0f, 1.0f);
+        //will play the alert tone continuously
+        mediaPlayer.setLooping(true);
         mediaPlayer.start();
     }
 
+    /**
+     * Method to stop playing the alert tone
+     * @param mediaPlayer
+     */
     public void stopAlertTone(MediaPlayer mediaPlayer){
         mediaPlayer.stop();
         mediaPlayer.prepareAsync();
@@ -155,7 +229,6 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("OnDestroy: ", readings.toString());
         locationActivity.stopUsingGPS();
     }
 
@@ -215,6 +288,9 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
 
     }
 
+    /**
+     * This method starts an asynchronous intent service to fetch the street address using location cooridnates and waits for results
+     */
     protected void startIntentService() {
         Log.i(TAG, "Starting intent service for geolocation");
         Intent intent = new Intent(this, FetchAddressIntentService.class);
@@ -223,18 +299,34 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
         startService(intent);
     }
 
+    /**
+     * GeoLocation getter - returns street address of incident
+     * @return geolocation
+     */
     public String getGeoLocation() {
         return geoLocation;
     }
 
+    /**
+     * GeoLocation setter - set sthe street address of incident
+     * @param geoLocation
+     */
     public void setGeoLocation(String geoLocation) {
         this.geoLocation = geoLocation;
         Log.i(TAG, "Address is: " + this.geoLocation);
     }
 
+
+    /**
+     * This class is used to receive a callback result from FetchAddresssIntentService
+     */
     class AddressResultReceiver extends ResultReceiver {
         public String TAG = "AddressResultReceiver";
 
+        /**
+         * constructor
+         * @param handler
+         */
         public AddressResultReceiver(Handler handler) {
             super(handler);
         }
@@ -256,10 +348,17 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
 
         }
 
+        /**
+         * displays output and send a text message after receiving street address result
+         * @param mAddressOutput
+         */
         private void displayAddressOutput(String mAddressOutput) {
             Log.i(TAG, "Inside displayAddressOutput");
+            //set fetched street address
             setGeoLocation(mAddressOutput);
+            //send text messages to emergency contact list
             prepareAndSendMessage();
+            //display coordinates and street address on UI
             displayLocationCoordinates();
         }
     }

@@ -18,16 +18,23 @@ import java.util.Locale;
 /**
  * Created by Mitikaa on 3/12/17.
  *
- * Reference: Followed tutorial on https://developer.android.com/training/location/display-address.html
+ * This class uses latitude and longitude readings to fetch street address, called reverse geocoding
+ * It handles asynchronous requests
+ *
+ * References:
+ * https://developer.android.com/training/location/display-address.html
  */
 public class FetchAddressIntentService extends IntentService {
 
     public static String TAG = "FetchAddressIntentService";
+
+    /**
+     * Used for receiving a callback result
+     */
     protected ResultReceiver mReceiver;
 
     /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     *
+     * Creates an IntentService.  Invoked by subclass's constructor.
      * @param name Used to name the worker thread, important only for debugging.
      */
     public FetchAddressIntentService(String name) {
@@ -43,6 +50,10 @@ public class FetchAddressIntentService extends IntentService {
         super(TAG);
     }
 
+    /**
+     * This method is invoked on the worker thread with a request to process.
+     * @param intent
+     */
     @Override
     protected void onHandleIntent(Intent intent) {
         String errorMessage = "";
@@ -54,19 +65,22 @@ public class FetchAddressIntentService extends IntentService {
             return;
         }
 
+        //Geocoder object to handle reverse geocoding
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
         // Get the location passed to this service through an extra.
         Location location = intent.getParcelableExtra(
                 Constants.LOCATION_DATA_EXTRA);
 
+        //list of addresses fetched using latitude and longitude coordinates
         List<Address> addresses = null;
 
         try {
+            //accepts a latitude and longitude and returns a list of addresses
             addresses = geocoder.getFromLocation(
                     location.getLatitude(),
                     location.getLongitude(),
-                    // In this sample, get just a single address.
+                    // In this, we need to get just a single address.
                     1);
         } catch (IOException ioException) {
             // Catch network or other I/O problems.
@@ -81,12 +95,13 @@ public class FetchAddressIntentService extends IntentService {
                     location.getLongitude(), illegalArgumentException);
         }
 
-        // Handle case where no address was found.
+        // Handle case where no address was found. Display error message
         if (addresses == null || addresses.size()  == 0) {
             if (errorMessage.isEmpty()) {
                 errorMessage = getString(R.string.no_address_found);
                 Log.e(TAG, errorMessage);
             }
+            //used to send results back to the requesting activity - in this case send a failure message
             deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
         } else {
             Address address = addresses.get(0);
@@ -97,17 +112,25 @@ public class FetchAddressIntentService extends IntentService {
             for(int i = 0; i <= address.getMaxAddressLineIndex(); i++) {
                 addressFragments.add(address.getAddressLine(i));
             }
+
             Log.i(TAG, getString(R.string.address_found));
+            //used to send results back to the requesting activity - in this case send a success message along with address found
             deliverResultToReceiver(Constants.SUCCESS_RESULT,
                     TextUtils.join(System.getProperty("line.separator"),
                             addressFragments));
         }
     }
 
-    private void deliverResultToReceiver(int failureResult, String errorMessage) {
+    /**
+     * Method to send the results back to the requesting activity
+     * @param resultCode : code to indicate success or failure
+     * @param message : message to be sent to requesting activity
+     */
+    private void deliverResultToReceiver(int resultCode, String message) {
         Bundle bundle = new Bundle();
-        bundle.putString(Constants.RESULT_DATA_KEY, errorMessage);
-        mReceiver.send(failureResult, bundle);
+        bundle.putString(Constants.RESULT_DATA_KEY, message);
+        //send resultcode and message to requesting activity
+        mReceiver.send(resultCode, bundle);
     }
 
 }

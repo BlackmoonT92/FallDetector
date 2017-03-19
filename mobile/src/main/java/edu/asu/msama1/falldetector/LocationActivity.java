@@ -15,31 +15,72 @@ import android.widget.Toast;
 /**
  * Created by Mitikaa on 2/17/17.
  *
- * Reference: Followed tutorial on http://clover.studio/2016/08/09/getting-current-location-in-android-using-location-manager/
+ * References:
+ * http://clover.studio/2016/08/09/getting-current-location-in-android-using-location-manager/
+ * https://developer.android.com/reference/android/location/LocationManager.html
+ * https://developer.android.com/training/location/change-location-settings.html
  */
-
 public class LocationActivity  implements LocationListener, ActivityCompat.OnRequestPermissionsResultCallback {
-
-    private final Context mContext;
-    protected LocationManager locationManager;
-    protected Location location;
-    double latitude = 0;
-    double longitude = 0;
-
-
-    private static final long MINIMUM_DISTANCE_FOR_UPDATES = 10;
-    private static final long MINIMUM_TIME_BETWEEN_UPDATES = 1000 * 60; //every 60 seconds
-    public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    public static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 2;
 
     public static String TAG = "LocationActivity";
 
+    /**
+     * Current application context
+     */
+    private final Context mContext;
+
+    /**
+     * LocationManager provides access to the system location services
+     */
+    protected LocationManager locationManager;
+
+    /**
+     * Location object to store current location coordinates
+     */
+    protected Location location;
+
+    /**
+     * Stores latitude coordinate
+     */
+    double latitude = 0;
+
+    /**
+     * Stores longitude coordinate
+     */
+    double longitude = 0;
+
+    /**
+     * Indicates the minimum distance between location updates
+     * evey 10 meters
+     */
+    private static final long MINIMUM_DISTANCE_FOR_UPDATES = 10;
+
+    /**
+     * Indicates the minimum time interval between location updates
+     * every 60 seconds
+     */
+    private static final long MINIMUM_TIME_BETWEEN_UPDATES = 1000 * 60;
+
+    /**
+     * Permission variable to store access for "android.permission.ACCESS_FINE_LOCATION"
+     */
+    public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+
+    /**
+     * Permission variable to store access for "android.permission.ACCESS_COARSE_LOCATION"
+     */
+    public static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 2;
+
+    /**
+     * Constructor
+     * @param mContext
+     */
     public LocationActivity(Context mContext){
         super();
-        //Log.i(TAG, "Constructor");
         this.mContext = mContext;
         Log.i(TAG, "longitude: " + longitude);
         Log.i(TAG, "latitude: " + latitude);
+        //get current location
         getLocation();
         Log.i(TAG, "longitude: " + longitude);
         Log.i(TAG, "latitude: " + latitude);
@@ -66,22 +107,32 @@ public class LocationActivity  implements LocationListener, ActivityCompat.OnReq
 
     }
 
+    /**
+     * Location getter
+     * Method to check if user has granted access to ACCESS_FINE_LOCATION and then use GPS to get current coordinates
+     * @return location
+     */
     public Location getLocation() {
         try{
-            //Log.i(TAG, "Inside getLocation method");
             locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+
+            //true if the provider exists and is enabled
             boolean checkGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             boolean checkNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
+            //if provider is not available, inform user
             if (!checkGPS && !checkNetwork) {
                 Log.e(TAG, "No Service Provider Available");
             } else {
+                //else get the location coordinates
                 if (checkNetwork) {
+                    //Checks whether the app has a given permission and whether the app op that corresponds to this permission is allowed.
                     if ((ActivityCompat.checkSelfPermission((Activity)mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
                             && (ActivityCompat.checkSelfPermission((Activity)mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)){
                         ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
                     }
 
+                    //Register for location updates using the named provider
                     try {
                         locationManager.requestLocationUpdates(
                                 LocationManager.NETWORK_PROVIDER,
@@ -89,12 +140,13 @@ public class LocationActivity  implements LocationListener, ActivityCompat.OnReq
                                 MINIMUM_DISTANCE_FOR_UPDATES,
                                 this);
                     if (locationManager != null) {
+                        //Get the location indicating the data from the last known location fix obtained from the given provider
                         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     }
 
                     if (location != null) {
                         Log.i(TAG, "Fetching new coordinates ");
-
+                        //extract latitude and longitude values from the location
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
                     }
@@ -105,20 +157,24 @@ public class LocationActivity  implements LocationListener, ActivityCompat.OnReq
                 }
             }
 
+            //if GPS provider is available
             if (checkGPS) {
                 Toast.makeText(mContext, "GPS Available", Toast.LENGTH_SHORT).show();
                 if (location == null) {
                     try {
+                        //Register for location updates using the named provider
                         locationManager.requestLocationUpdates(
                                 LocationManager.GPS_PROVIDER,
                                 MINIMUM_TIME_BETWEEN_UPDATES,
                                 MINIMUM_DISTANCE_FOR_UPDATES,
                                 this);
                         if (locationManager != null) {
+                            //Get the location indicating the data from the last known location fix obtained from the given provider
                             location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                         }
 
                         if (location != null) {
+                            //extract latitude and longitude values from the location
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
                         }
@@ -134,6 +190,12 @@ public class LocationActivity  implements LocationListener, ActivityCompat.OnReq
         return location;
     }
 
+    /**
+     * Callback for the result from requesting permissions
+     * @param requestCode : code by which callback is requested
+     * @param permissions : requested permissions
+     * @param grantResults : results for requested permission
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -174,6 +236,10 @@ public class LocationActivity  implements LocationListener, ActivityCompat.OnReq
         }
     }
 
+    /**
+     * Removes all location updates for the specified LocationListener
+     * This method will disable any future istener updates
+     */
     public void stopUsingGPS() {
         if (locationManager != null) {
             if (ActivityCompat.checkSelfPermission((Activity)mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -185,6 +251,10 @@ public class LocationActivity  implements LocationListener, ActivityCompat.OnReq
         }
     }
 
+    /**
+     * Latitude value getter
+     * @return latitude
+     */
     public double getLatitude() {
         if(location != null){
             latitude = location.getLatitude();
@@ -192,6 +262,10 @@ public class LocationActivity  implements LocationListener, ActivityCompat.OnReq
         return latitude;
     }
 
+    /**
+     * Longitude value getter
+     * @return longitude
+     */
     public double getLongitude() {
         if(location != null){
             longitude = location.getLongitude();
@@ -199,14 +273,26 @@ public class LocationActivity  implements LocationListener, ActivityCompat.OnReq
         return longitude;
     }
 
+    /**
+     * Latitude setter
+     * @param latitude
+     */
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
+    /**
+     * Longitude setter
+     * @param longitude
+     */
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
+    /**
+     * Location setter
+     * @param location
+     */
     public void setLocation(Location location) {
         this.location = location;
     }

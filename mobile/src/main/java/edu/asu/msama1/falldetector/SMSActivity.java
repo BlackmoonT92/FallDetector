@@ -12,29 +12,56 @@ import android.widget.Toast;
 /**
  * Created by Mitikaa on 2/21/17.
  *
- * Reference: Followed tutorial on https://www.tutorialspoint.com/android/android_sending_sms.htm
+ * This class is used to prepare and send text messages to the contacts registered by the user
+ *
+ * References:
+ * https://www.tutorialspoint.com/android/android_sending_sms.htm
+ * https://developer.android.com/reference/android/telephony/SmsManager.html
  */
-
 public class SMSActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
 
     public static String TAG = "SMSActivity";
+
+    /**
+     * Permission variable to store access for "android.permission.REQUEST_SEND_SMS"
+     */
     public static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 3;
 
+    /**
+     * Current application context
+     */
     private final Context mContext;
-    String phoneNumber;
-    double latitude, longitude;
-    String message;
 
+    /**
+     * Phone number to send message to
+     */
+    private String phoneNumber;
+
+    /**
+     * Text message b ody to be sent to the emergency contacts in case on incident
+     */
+    private String message;
+
+    /**
+     * Constructor
+     * @param mContext : application context
+     * @param phoneNumber : COntact number too which text message has to be sent
+     * @param latitude : latitude of incident
+     * @param longitude : longitude of incident
+     * @param message : text message body to be sent
+     */
     public SMSActivity(Context mContext, String phoneNumber, double latitude, double longitude, String message){
         this.mContext = mContext;
         if(phoneNumber==null){
             this.phoneNumber = "6023734290";
         }
-        this.latitude = latitude;
-        this.longitude = longitude;
         this.message = message;
     }
 
+    /**
+     * This method checks for permission from user to send text messages and if permitted, sends the message to the specified phoneNumber
+     * @param phoneNumber
+     */
     public void sendSMSMessge(String phoneNumber){
         if(ActivityCompat.checkSelfPermission((Activity)mContext, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions((Activity)mContext,
@@ -44,16 +71,24 @@ public class SMSActivity implements ActivityCompat.OnRequestPermissionsResultCal
         try{
             Log.i(TAG, "Text message to be sent: " + message);
             Log.i(TAG, "Phone #: " + phoneNumber);
+            //Manages SMS operations - sending text message in this case
             SmsManager smsManager = SmsManager.getDefault();
+            //sends a text based message
             smsManager.sendTextMessage(phoneNumber, null, this.message, null, null);
             Toast.makeText(mContext, "SMS Sent", Toast.LENGTH_LONG).show();
-
         } catch (Exception e){
+            //display toast to user in case of failure of sending a message
             Toast.makeText(mContext, "Failed to send SMS", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
 
+    /**
+     * Callback for the result from requesting permissions
+     * @param requestCode : code by which callback is requested
+     * @param permissions : requested permissions
+     * @param grantResults : results for requested permission
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
@@ -77,34 +112,34 @@ public class SMSActivity implements ActivityCompat.OnRequestPermissionsResultCal
         }
     }
 
+    /**
+     * Getter for phone number to which text message is to be sent
+     * @return phoneNumber : number to which text message will be sent
+     */
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
+    /**
+     * Setter for phone number to which text message is to be sent
+     * @param phoneNumber : number to which text message will be sent
+     */
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
+    /**
+     * Getter for the text message body to be sent
+     * @return message : text message to be sent
+     */
     public String getMessage() {
         return message;
     }
 
+    /**
+     * Setter for the text message body to be sent
+     * @param message : text message to be sent
+     */
     public void setMessage(String message) {
         this.message = message;
     }
