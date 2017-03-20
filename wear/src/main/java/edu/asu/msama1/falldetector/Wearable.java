@@ -8,7 +8,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -193,29 +192,12 @@ public class Wearable extends Activity implements SensorEventListener, GoogleApi
 
         //if change in Accelerometer readings
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            new CountDownTimer(1000, 1000) {
-                public void onFinish() {
-                    getAccelerometerReadings(sensorEvent);
-                }
-
-                public void onTick(long millisUntilFinished) {
-
-                }
-            }.start();
+            getAccelerometerReadings(sensorEvent);
         }
 
         //if change in Gyroscope readings
         if (sensorEvent.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            //1 second countdown, 1 second interval
-            new CountDownTimer(1000, 1000) {
-                public void onFinish() {
-                    getGyroscopeReadings(sensorEvent);
-                }
-
-                public void onTick(long millisUntilFinished) {
-
-                }
-            }.start();
+            getGyroscopeReadings(sensorEvent);
         }
     }
 
