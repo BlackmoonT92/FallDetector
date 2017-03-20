@@ -17,7 +17,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets { main { resources.srcDirs = ['src/main/resources', 'src/main/resources/'] } }
+    sourceSets {
+        main {
+            resources.srcDirs = ['src/main/resources', 'src/main/resources/']
+            res.srcDirs = ['src/main/res', 'src/main/res/menu']
+        }
+    }
 
     dependencies {
         compile fileTree(include: ['*.jar'], dir: 'libs')

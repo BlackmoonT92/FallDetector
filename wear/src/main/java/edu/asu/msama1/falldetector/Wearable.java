@@ -26,7 +26,15 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by Mitikaa on 10/21/16.
+ * Copyright 2017 Mitikaa Sama,
+ *
+ * The Instructor and the Arizona State University
+ * has the right to build and evaluate the software package
+ * for the purpose of determining the grade and program assessment.
+ *
+ * Purpose: Masters Applied Project
+ *
+ * @author Mitikaa Sama on 10/21/16.
  *
  * This class uses device's motion sensors to get Accelerometer and Gyroscope readings and sends it to the handheld device for further processing
  *

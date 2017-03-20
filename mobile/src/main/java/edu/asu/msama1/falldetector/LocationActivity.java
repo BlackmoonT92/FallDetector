@@ -13,7 +13,15 @@ import android.util.Log;
 import android.widget.Toast;
 
 /**
- * Created by Mitikaa on 2/17/17.
+ * Copyright 2017 Mitikaa Sama,
+ *
+ * The Instructor and the Arizona State University
+ * has the right to build and evaluate the software package
+ * for the purpose of determining the grade and program assessment.
+ *
+ * Purpose: Masters Applied Project
+ *
+ * @author Mitikaa Sama on 2/17/17.
  *
  * References:
  * http://clover.studio/2016/08/09/getting-current-location-in-android-using-location-manager/

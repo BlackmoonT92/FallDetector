@@ -1,7 +1,15 @@
 package edu.asu.msama1.falldetector;
 
 /**
- * Created by Mitikaa on 3/10/17.
+ * Copyright 2017 Mitikaa Sama,
+ *
+ * The Instructor and the Arizona State University
+ * has the right to build and evaluate the software package
+ * for the purpose of determining the grade and program assessment.
+ *
+ * Purpose: Masters Applied Project
+ *
+ * @author Mitikaa Sama on 3/10/17.
  *
  * This is a model class and consists of accelerometer and gyroscope arrays as member variables, used to plot line graphs on GraphView
  */

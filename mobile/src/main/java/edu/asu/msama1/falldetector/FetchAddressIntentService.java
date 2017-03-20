@@ -16,7 +16,15 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Created by Mitikaa on 3/12/17.
+ * Copyright 2017 Mitikaa Sama,
+ *
+ * The Instructor and the Arizona State University
+ * has the right to build and evaluate the software package
+ * for the purpose of determining the grade and program assessment.
+ *
+ * Purpose: Masters Applied Project
+ *
+ * @author Mitikaa Sama on 3/12/17.
  *
  * This class uses latitude and longitude readings to fetch street address, called reverse geocoding
  * It handles asynchronous requests

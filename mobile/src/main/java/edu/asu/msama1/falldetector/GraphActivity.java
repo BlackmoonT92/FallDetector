@@ -6,13 +6,24 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.FrameLayout;
 
 import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * Created by Mitikaa on 3/10/17.
+ * Copyright 2017 Mitikaa Sama,
+ *
+ * The Instructor and the Arizona State University
+ * has the right to build and evaluate the software package
+ * for the purpose of determining the grade and program assessment.
+ *
+ * Purpose: Masters Applied Project
+ *
+ * @author Mitikaa Sama on 3/10/17.
  *
  * This class is used to plot line graph to show accelerometer and gyroscope norm readings
  * It uses last 10 records stored in the database and displays the values in form of a line graph
@@ -67,7 +78,7 @@ public class GraphActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
 
-        //after start activty requested from MainActivity
+        //after start activity requested from MainActivity
         Intent i = getIntent();
         Log.i(TAG, "Activity started");
 
@@ -124,5 +135,45 @@ public class GraphActivity extends AppCompatActivity {
         }
 
     };
+
+    /**
+     * This method handles action button items
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                // User chose the "Settings" item, show the app settings UI...
+                //start new intent to display page to change preference settings
+                //start main activity
+                Intent i = new Intent(this, MainActivity.class);
+                startActivity(i);
+                return true;
+
+            case R.id.action_graph:
+                //currently on graph activity, so do nothing
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    /**
+     * Inflate action menu bar
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.action_menu, menu);
+        return true;
+    }
 
 }

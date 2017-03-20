@@ -9,7 +9,15 @@ import com.google.android.gms.wearable.WearableListenerService;
 import java.io.IOException;
 
 /**
- * Created by Mitikaa on 11/14/16.
+ * Copyright 2017 Mitikaa Sama,
+ *
+ * The Instructor and the Arizona State University
+ * has the right to build and evaluate the software package
+ * for the purpose of determining the grade and program assessment.
+ *
+ * Purpose: Masters Applied Project
+ *
+ * @author Mitikaa Sama on 11/14/16.
  *
  * This class receives message events from the wearable node
  * Lifecycle of this class is managed by Wearable

@@ -10,7 +10,15 @@ import android.util.Log;
 import android.widget.Toast;
 
 /**
- * Created by Mitikaa on 2/21/17.
+ * Copyright 2017 Mitikaa Sama,
+ *
+ * The Instructor and the Arizona State University
+ * has the right to build and evaluate the software package
+ * for the purpose of determining the grade and program assessment.
+ *
+ * Purpose: Masters Applied Project
+ *
+ * @author Mitikaa Sama on 2/21/17.
  *
  * This class is used to prepare and send text messages to the contacts registered by the user
  *

@@ -4,4 +4,6 @@
     <string name="invalid_lat_long_used">Invalid Latitutde and Longitude Used</string>
     <string name="no_address_found">No Valid Address Found</string>
     <string name="address_found">Address Found</string>
+    <string name="action_graph">Show Graph</string>
+    <string name="action_settings">Show Settings</string>
 </resources>

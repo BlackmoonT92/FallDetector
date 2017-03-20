@@ -13,7 +13,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -32,7 +36,15 @@ import static edu.asu.msama1.falldetector.Constants.RESULT_DATA_KEY;
 import static edu.asu.msama1.falldetector.Constants.SUCCESS_RESULT;
 
 /**
- * Created by Mitikaa on 11/14/16.
+ * Copyright 2017 Mitikaa Sama,
+ *
+ * The Instructor and the Arizona State University
+ * has the right to build and evaluate the software package
+ * for the purpose of determining the grade and program assessment.
+ *
+ * Purpose: Masters Applied Project
+ *
+ * @author Mitikaa Sama on 11/14/16.
  *
  * This class handles sending text messages, fetching latitude and longitude, getting street address and raising an alarm in case a fall is detected
  *
@@ -122,6 +134,10 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
         //this activity will start ONLY if a fall is detected
         Intent i = getIntent();
         Log.i(TAG, "Activity started");
+
+        //action bar to change settings of the app
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
 
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).addApi(Awareness.API).build();
 
@@ -361,5 +377,46 @@ public class HandheldActivity extends AppCompatActivity implements GoogleApiClie
             //display coordinates and street address on UI
             displayLocationCoordinates();
         }
+    }
+
+    /**
+     * This method handles action button items
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                //start new intent to display page to change preference settings
+                //start main activity
+                Intent intent1 = new Intent(this, MainActivity.class);
+                startActivity(intent1);
+                return true;
+
+            case R.id.action_graph:
+                //start main activity
+                Intent intent2 = new Intent(this, GraphActivity.class);
+                startActivity(intent2);
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    /**
+     * Inflate action menu bar
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.action_menu, menu);
+        return true;
     }
 }

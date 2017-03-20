@@ -15,7 +15,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by Mitikaa on 3/10/17.
+ * Copyright 2017 Mitikaa Sama,
+ *
+ * The Instructor and the Arizona State University
+ * has the right to build and evaluate the software package
+ * for the purpose of determining the grade and program assessment.
+ *
+ * Purpose: Masters Applied Project
+ *
+ * @author Mitikaa Sama on 3/10/17.
  *
  * This class is used to access the database for accelerometer and gyroscope norm values
  */
